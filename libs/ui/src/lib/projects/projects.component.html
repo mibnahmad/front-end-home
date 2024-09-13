@@ -1,0 +1,165 @@
+<div class="bg-gray-100 font-sans w-full">
+  <div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+      <div class="flex space-x-4">
+        <button (click)="switchViewMode('card')"
+          [ngClass]="{'bg-primary-600 text-white': viewMode === 'card', 'bg-white text-primary-600': viewMode !== 'card'}"
+          class="px-6 py-2 rounded-md transition duration-300 ease-in-out font-medium shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+          Card View
+        </button>
+        <button (click)="switchViewMode('list')"
+          [ngClass]="{'bg-primary-600 text-white': viewMode === 'list', 'bg-white text-primary-600': viewMode !== 'list'}"
+          class="px-6 py-2 rounded-md transition duration-300 ease-in-out font-medium shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+          List View
+        </button>
+      </div>
+      <button (click)="openModal()"
+        class="bg-primary-600 text-white px-6 py-2 rounded-md transition duration-300 ease-in-out font-medium shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+        Add New Project
+      </button>
+    </div>
+
+    <div class="mb-8">
+      <input type="text" [(ngModel)]="searchTerm" (input)="searchProjects()" placeholder="Search projects..."
+        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-300 ease-in-out shadow-sm">
+    </div>
+
+    <!-- Card View -->
+    <section *ngIf="viewMode === 'card'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let project of filteredProjects"
+        class="bg-white rounded-lg shadow-md overflow-hidden transition duration-300 hover:shadow-lg">
+        <div class="p-6">
+          <h3 class="text-xl font-semibold mb-2 text-gray-800">{{ project.title }}</h3>
+          <p class="text-gray-600 mb-4 text-sm line-clamp-2">{{ project.description || 'No description provided' }}</p>
+          <p class="text-xs text-gray-500 mb-4">Created: {{ project.createdAt | date:'medium' }}</p>
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-medium px-2 py-1 rounded-full"
+              [ngClass]="{'bg-green-100 text-green-800': project.priority === $Enums.Priority.LOW, 'bg-yellow-100 text-yellow-800': project.priority === $Enums.Priority.MEDIUM, 'bg-red-100 text-red-800': project.priority === $Enums.Priority.HIGH}">
+              {{ project.priority | titlecase }} Priority
+            </span>
+            <div class="space-x-2">
+              <button (click)="openImageModal(imageUrl)"
+                class="bg-primary-500 text-white px-3 py-1 rounded-md text-sm hover:bg-primary-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                View Image
+              </button>
+              <button (click)="openDeleteModal(project)"
+                class="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- List View -->
+    <section *ngIf="viewMode === 'list'" class="overflow-x-auto bg-white rounded-lg shadow-md">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Description</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Priority</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Created At</th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let project of filteredProjects">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ project.title }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <span class="line-clamp-1">{{ project.description || 'No description provided' }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                [ngClass]="{'bg-green-100 text-green-800': project.priority === $Enums.Priority.LOW, 'bg-yellow-100 text-yellow-800': project.priority === $Enums.Priority.MEDIUM, 'bg-red-100 text-red-800': project.priority === $Enums.Priority.HIGH}">
+                {{ project.priority | titlecase }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ project.createdAt | date:'medium' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button (click)="openImageModal(imageUrl)"
+                class="text-primary-600 hover:text-primary-900 mr-2 focus:outline-none focus:underline">View
+                Image</button>
+              <button (click)="openDeleteModal(project)"
+                class="text-red-600 hover:text-red-900 focus:outline-none focus:underline">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Image Modal -->
+    <div *ngIf="isImageModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-4 rounded-lg max-w-3xl max-h-[90vh] overflow-auto">
+        <img [src]="imageUrl" alt="Project Image" class="max-w-full h-auto">
+        <button (click)="closeImageModal()"
+          class="mt-4 bg-primary-500 text-white px-4 py-2 rounded-md hover:bg-primary-600 transition duration-300 ease-in-out">
+          X
+        </button>
+      </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div *ngIf="isDeleteModalOpen"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+      <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Delete Project</h2>
+        <p class="text-gray-600 mb-6">Are you sure you want to delete this project?</p>
+        <div class="flex justify-end space-x-2">
+          <button type="button" (click)="closeDeleteModal()"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition duration-300 ease-in-out font-medium text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+            Cancel
+          </button>
+          <button type="button" (click)="deleteProject(projectToDelete)"
+            class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300 ease-in-out font-medium text-sm shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+            Delete Project
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isModalOpen"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+      <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Add New Project</h2>
+        <form (ngSubmit)="addProject()" class="space-y-4">
+          <div>
+            <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <input type="text" id="title" name="title" [(ngModel)]="newProject.title" required
+              class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition duration-300 ease-in-out">
+          </div>
+          <div>
+            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description (optional)</label>
+            <textarea id="description" name="description" [(ngModel)]="newProject.description" rows="3"
+              class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition duration-300 ease-in-out"></textarea>
+          </div>
+          <div>
+            <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+            <select id="priority" name="priority" [(ngModel)]="newProject.priority" required
+              class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition duration-300 ease-in-out">
+              <option [ngValue]="$Enums.Priority.LOW">Low</option>
+              <option [ngValue]="$Enums.Priority.MEDIUM">Medium</option>
+              <option [ngValue]="$Enums.Priority.HIGH">High</option>
+            </select>
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button type="button" (click)="closeModal()"
+              class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition duration-300 ease-in-out font-medium text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+              Cancel
+            </button>
+            <button type="submit"
+              class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition duration-300 ease-in-out font-medium text-sm shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+              Add Project
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

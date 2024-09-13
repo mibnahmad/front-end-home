@@ -1,0 +1,28 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@monorepo-take-home-test/boards": ["libs/boards/src/index.ts"],
+      "@monorepo-take-home-test/projects": ["libs/projects/src/index.ts"],
+      "@monorepo-take-home-test/tasks": ["libs/tasks/src/index.ts"],
+      "@monorepo-take-home-test/ui": ["libs/ui/src/index.ts"]
+    },
+    "types": ["node"]
+  },
+  "exclude": ["node_modules", "tmp"]
+}
